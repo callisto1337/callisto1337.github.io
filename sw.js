@@ -586,29 +586,26 @@ function hmrAcceptRun(bundle, id) {
 
 },{}],"20rDJ":[function(require,module,exports) {
 var _serviceWorker = require("@parcel/service-worker");
-// const cacheName = 'scan-app-v1';
-const assetUrls = [
-    'index.html'
-];
 addEventListener('install', (event)=>{
     event.waitUntil(caches.open(_serviceWorker.version).then((cache)=>{
+        console.log('[SW]: added');
         return cache.addAll(_serviceWorker.manifest);
     }));
 });
-// addEventListener('activate', (event) => {
-//   event.waitUntil(async () => {
-//     caches.keys().then((keys) => {
-//       return Promise.all(
-//         keys.map((key) => key !== version && caches.delete(key))
-//       );
-//     });
-//   });
-// });
+addEventListener('activate', (event)=>{
+    event.waitUntil(async ()=>{
+        caches.keys().then((keys)=>{
+            return Promise.all(keys.map((key)=>key !== _serviceWorker.version && caches.delete(key)
+            ));
+        });
+    });
+});
 addEventListener('fetch', (event)=>{
     event.respondWith(cacheFirst(event.request));
 });
 async function cacheFirst(request) {
     const cached = await caches.match(request);
+    console.log('cached: ', cached);
     return cached ?? await fetch(request);
 }
 
