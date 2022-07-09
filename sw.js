@@ -1,2 +1,40 @@
-(()=>{let e=[],a="";e=["/index.html","/manifest.webmanifest","/app-icon-512-512.493eca5b.png","/index.2565325a.js","/index.cf40d973.css"],a="8b4b7868";self.addEventListener("install",(t=>{t.waitUntil((async()=>{const t=await caches.open(a);await t.addAll(e)})())})),self.addEventListener("activate",(e=>{e.waitUntil((async()=>{"navigationPreload"in self.registration&&await self.registration.navigationPreload.enable()})()),self.clients.claim()})),self.addEventListener("fetch",(function(e){e.respondWith(fetch(e.request).catch((function(){return caches.match(e.request)})))}))})();
-//# sourceMappingURL=sw.js.map
+const assetsList = [
+    '/index.html',
+    '/index.js',
+]
+
+const versionName = `app-v3`;
+
+self.addEventListener('install', function (event) {
+    event.waitUntil(
+        caches.open(versionName).then(function (cache) {
+            return cache.addAll(assetsList);
+        })
+    );
+});
+
+self.addEventListener('activate', function (event) {
+    event.waitUntil(
+        caches.keys().then(function (cacheNames) {
+            return Promise.all(
+                cacheNames
+                    .filter(function (cacheName) {
+                        // Для удаления кеша необходимо вернуть true.
+                        // Помните, что кеши являются общими
+                        // для всего источника
+                    })
+                    .map(function (cacheName) {
+                        return caches.delete(cacheName);
+                    })
+            );
+        })
+    );
+});
+
+self.addEventListener('fetch', function (event) {
+    event.respondWith(
+        fetch(event.request).catch(function () {
+            return caches.match(event.request);
+        }),
+    );
+});
