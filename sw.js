@@ -1,40 +1,27 @@
-const assetsList = [
-    '/index.html',
-    '/index.js',
-]
+// Choose a cache name
+const cacheName = 'cache-v1';
+// List the files to precache
+const precacheResources = ['/', '/index.html', '/index.js'];
 
-const versionName = `app-v3`;
-
-self.addEventListener('install', function (event) {
-    event.waitUntil(
-        caches.open(versionName).then(function (cache) {
-            return cache.addAll(assetsList);
-        })
-    );
+// When the service worker is installing, open the cache and add the precache resources to it
+self.addEventListener('install', (event) => {
+    console.log('Service worker install event!');
+    event.waitUntil(caches.open(cacheName).then((cache) => cache.addAll(precacheResources)));
 });
 
-self.addEventListener('activate', function (event) {
-    event.waitUntil(
-        caches.keys().then(function (cacheNames) {
-            return Promise.all(
-                cacheNames
-                    .filter(function (cacheName) {
-                        // Для удаления кеша необходимо вернуть true.
-                        // Помните, что кеши являются общими
-                        // для всего источника
-                    })
-                    .map(function (cacheName) {
-                        return caches.delete(cacheName);
-                    })
-            );
-        })
-    );
+self.addEventListener('activate', (event) => {
+    console.log('Service worker activate event!');
 });
 
-self.addEventListener('fetch', function (event) {
+// When there's an incoming fetch request, try and respond with a precached resource, otherwise fall back to the network
+self.addEventListener('fetch', (event) => {
+    console.log('Fetch intercepted for:', event.request.url);
     event.respondWith(
-        fetch(event.request).catch(function () {
-            return caches.match(event.request);
+        caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+            return fetch(event.request);
         }),
     );
 });
