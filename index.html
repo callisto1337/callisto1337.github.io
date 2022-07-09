@@ -1,21 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Simple PWA</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="manifest" href="/manifest.json">
-<body>
-<nav>
-  <h1>VM PWA</h1>
-</nav>
-<header>
-  <h2>Изучаем PWA, manifest, Service Workers</h2>
-</header>
-<div class="container">
-  <div id="posts"></div>
-</div>
+---
+feature_name: "Service Worker Sample: Custom Offline Page"
+chrome_version: 40
+feature_id: 6561526227927040
+---
 
-<script src="js/app.js"></script>
-</body>
-</html>
+<h3>Background</h3>
+<p>
+    This sample demonstrates basic service worker registration. During the installation step, a
+    custom "Sorry, you're offline." page is cached. The service worker handles all fetch requests
+    for HTML pages (ignoring other requests), and if fetching an HTML page fails due to a network
+    error, it will instead return the cached "offline" page.
+</p>
+
+<p>
+    Try disconnecting from your network, and then reload this page.
+</p>
+
+{% include js_snippet.html filename='index.js' title="This Page's JavaScript" %}
+{% include js_snippet.html filename='service-worker.js' displayonly=true title="Service Worker's JavaScript" %}
